@@ -1,0 +1,87 @@
+# DyPyBench #1 (grab) — run the same test command under DynaPyt and CIMonitor,
+# upload each tool's logs as workflow artifacts for manual analysis.
+
+name: DynaPyt vs CIMonitor
+
+on: [push, workflow_dispatch]
+
+jobs:
+  dynapyt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements_dev.txt
+          pip install -e .
+          pip install pytest pytest-timeout
+
+      - name: Setup DynaPyt
+        uses: clonedSemicolon/seytup-dynapyt@master
+        with:
+          directory: "grab"
+          analysis: "dynapyt.analyses.CallGraph.CallGraph"
+
+      - name: Run test suite
+        timeout-minutes: 60
+        run: |
+          pytest --timeout=300 --import-mode=importlib tests 2>&1 | tee pytest-output.log || true
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-grab-dynapyt
+          path: pytest-output.log
+
+      - name: Collect & upload DynaPyt traces
+        if: always()
+        uses: clonedSemicolon/seytup-dynapyt@master
+        with:
+          mode: collect
+          artifact-name: dynapyt-grab-${{ github.run_id }}
+
+  cimonitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: JavidDitty/setup-cintent@64faaac1333aabc2e0a00af6109b48ec4d8071bf
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements_dev.txt
+          pip install -e .
+          pip install pytest pytest-timeout
+
+      - name: Run test suite
+        timeout-minutes: 60
+        run: |
+          pytest --timeout=300 --import-mode=importlib tests 2>&1 | tee pytest-output.log || true
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-grab-cimonitor
+          path: pytest-output.log
+
+      - name: Upload CIntent Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CINTENT_ARTIFACT_NAME }}
+          path: ${{ env.CINTENT_LOGS }}
