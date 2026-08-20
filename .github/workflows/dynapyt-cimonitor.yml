@@ -32,7 +32,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 60
         run: |
-          pytest --timeout=300 --import-mode=importlib tests 2>&1 | tee pytest-output.log || true
+          python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
@@ -70,7 +70,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 60
         run: |
-          pytest --timeout=300 --import-mode=importlib tests 2>&1 | tee pytest-output.log || true
+          python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
