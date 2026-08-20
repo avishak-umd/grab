@@ -8,7 +8,7 @@ on: [push, workflow_dispatch]
 jobs:
   dynapyt:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
 
@@ -30,9 +30,9 @@ jobs:
           analysis: "dynapyt.analyses.CallGraph.CallGraph"
 
       - name: Run test suite
-        timeout-minutes: 60
+        timeout-minutes: 320
         run: |
-          python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 120 285m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
@@ -50,7 +50,7 @@ jobs:
 
   cimonitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
 
@@ -68,9 +68,9 @@ jobs:
           pip install pytest pytest-timeout
 
       - name: Run test suite
-        timeout-minutes: 60
+        timeout-minutes: 320
         run: |
-          python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 120 285m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
