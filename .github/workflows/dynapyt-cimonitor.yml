@@ -24,7 +24,7 @@ jobs:
           pip install pytest pytest-timeout
 
       - name: Setup DynaPyt
-        uses: clonedSemicolon/seytup-dynapyt@master
+        uses: avishak-umd/seytup-dynapyt@master
         with:
           directory: "grab"
           analysis: "dynapyt.analyses.CallGraph.CallGraph"
@@ -32,7 +32,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 320
         run: |
-          timeout -s INT -k 120 285m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 1200 265m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
@@ -43,7 +43,7 @@ jobs:
 
       - name: Collect & upload DynaPyt traces
         if: always()
-        uses: clonedSemicolon/seytup-dynapyt@master
+        uses: avishak-umd/seytup-dynapyt@master
         with:
           mode: collect
           artifact-name: dynapyt-grab-${{ github.run_id }}
@@ -70,7 +70,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 320
         run: |
-          timeout -s INT -k 120 285m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 1200 265m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
