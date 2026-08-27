@@ -59,6 +59,8 @@ jobs:
           python-version: "3.10"
 
       - uses: JavidDitty/setup-cintent@main
+        with:
+          profiler: "setprofile"
 
       - name: Install dependencies
         run: |
