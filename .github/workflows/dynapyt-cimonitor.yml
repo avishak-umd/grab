@@ -58,7 +58,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - uses: JavidDitty/setup-cintent@64faaac1333aabc2e0a00af6109b48ec4d8071bf
+      - uses: JavidDitty/setup-cintent@main
 
       - name: Install dependencies
         run: |
