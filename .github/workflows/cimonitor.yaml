@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.10"
 
-      - uses: avishak-umd/setup-cintent@main
+      - uses: avishak-umd/CIMonitor@main
         with:
           profiler: "setprofile"
 
