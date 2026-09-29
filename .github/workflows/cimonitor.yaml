@@ -1,0 +1,48 @@
+# DyPyBench #1 (grab) — run the same test command under DynaPyt and CIMonitor,
+# upload each tool's logs as workflow artifacts for manual analysis.
+
+name: CIMonitor-WorkingThread
+
+on: [push, workflow_dispatch]
+
+jobs:
+
+  cimonitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - uses: avishak-umd/setup-cintent@main
+        with:
+          profiler: "setprofile"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements_dev.txt
+          pip install -e .
+          pip install pytest pytest-timeout
+
+      - name: Run test suite
+        timeout-minutes: 320
+        run: |
+          timeout -s INT -k 1200 265m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+
+      - name: Upload test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-log-grab-cimonitor
+          path: pytest-output.log
+
+      - name: Upload CIntent Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.CINTENT_ARTIFACT_NAME }}
+          path: ${{ env.CINTENT_LOGS }}
