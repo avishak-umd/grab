@@ -32,7 +32,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 350
         run: |
-          timeout -s INT -k 20m 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 1200 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
@@ -73,7 +73,7 @@ jobs:
       - name: Run test suite
         timeout-minutes: 350
         run: |
-          timeout -s INT -k 20m 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 1200 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
