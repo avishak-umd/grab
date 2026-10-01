@@ -8,7 +8,7 @@ on: [push, workflow_dispatch]
 jobs:
   dynapyt:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
 
@@ -30,9 +30,9 @@ jobs:
           analysis: "dynapyt.analyses.CallGraph.CallGraph"
 
       - name: Run test suite
-        timeout-minutes: 320
+        timeout-minutes: 350
         run: |
-          timeout -s INT -k 1200 265m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 20m 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
@@ -50,7 +50,7 @@ jobs:
 
   cimonitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
 
@@ -58,9 +58,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      - uses: JavidDitty/setup-cintent@main
-        with:
-          profiler: "setprofile"
 
       - name: Install dependencies
         run: |
@@ -69,10 +66,14 @@ jobs:
           pip install -e .
           pip install pytest pytest-timeout
 
+      - uses: avishak-umd/CIMonitor@main
+        with:
+          profiler: "setprofile"
+
       - name: Run test suite
-        timeout-minutes: 320
+        timeout-minutes: 350
         run: |
-          timeout -s INT -k 1200 265m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
+          timeout -s INT -k 20m 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
 
       - name: Upload test log
         if: always()
