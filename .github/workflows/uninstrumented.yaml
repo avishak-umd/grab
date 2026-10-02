@@ -1,0 +1,27 @@
+name: Uninstrumented
+
+on: [push, workflow_dispatch]
+
+jobs:
+  dynapyt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements_dev.txt
+          pip install -e .
+          pip install pytest pytest-timeout
+     
+
+      - name: Run test suite
+        timeout-minutes: 350
+        run: |
+          timeout -s INT -k 1200 325m python runtest.py --test-all --network-service=threaded --grab-transport=urllib3 2>&1 | tee pytest-output.log || true
